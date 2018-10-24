@@ -18,8 +18,26 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
+
 public class WordCount {
-  public static class TokenizerMapper extends Mapper<Object, Text, Text, ArrayWritable> {
+
+  public static class TextArrayWritable extends ArrayWritable{
+    public TextArrayWritable(){
+      super(Text.class);
+    }
+
+    public TextArrayWritable(String[] vals){
+      super(Text.class);
+      Text[] texts = new Text[vals.length];
+      for (int i = 0; i < vals.length; i++) {
+        texts[i] = new Text(vals[i]);
+      }
+      set(texts);
+    }
+  }
+
+
+  public static class TokenizerMapper extends Mapper<Object, Text, Text, TextArrayWritable> {
     private Text word = new Text();
 
     public void map(Object key,
@@ -35,16 +53,16 @@ public class WordCount {
         nextString = nextString.toLowerCase();
         word.set(nextString);
         String[] temp = {"0", context.getCurrentKey().toString(), "0"};
-        context.write(word, new ArrayWritable(temp));
+        context.write(word, new TextArrayWritable(temp));
       }
     }
   }
 
-  public static class SortShuffler extends Reducer<Text, ArrayWritable, Text, ArrayWritable> {
+  public static class SortShuffler extends Reducer<Text, TextArrayWritable, Text, TextArrayWritable> {
 
-    private ArrayWritable result;
+    private TextArrayWritable result;
 
-    public void reduce(Text key, Iterable<ArrayWritable> values, Context context)
+    public void reduce(Text key, Iterable<TextArrayWritable> values, Context context)
             throws IOException, InterruptedException {
 
       // Get the context info about this key
@@ -71,7 +89,7 @@ public class WordCount {
       file_tuples.add(0, tot);
 
       String[] temp = (String[]) file_tuples.toArray();
-      result = new ArrayWritable(temp);
+      result = new TextArrayWritable(temp);
       // May throws errors if it treats zero as string and not doing internal cast to int
       context.write(key, result);
     }
@@ -104,7 +122,7 @@ public class WordCount {
     job.setCombinerClass(SortShuffler.class);
     job.setReducerClass(IntSumReducer.class);
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(ArrayWritable.class);
+    job.setOutputValueClass(TextArrayWritable.class);
     FileInputFormat.addInputPath(job, new Path(args[0]));
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     System.exit(job.waitForCompletion(true) ? 0 : 1);
