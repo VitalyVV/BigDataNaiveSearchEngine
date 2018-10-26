@@ -1,0 +1,11 @@
+<settings>
+  <servers>
+    <server>
+      <id>ssh-team5</id>
+      <username>team5</username>
+      <password>OTQzMD</password>
+      <filePermissions>775</filePermissions>
+      <directoryPermissions>775</directoryPermissions>
+    </server>
+  </servers>
+</settings>

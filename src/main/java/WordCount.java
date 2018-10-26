@@ -66,7 +66,7 @@ public class WordCount {
             throws IOException, InterruptedException {
 
       // Get the context info about this key
-      String[] info = (String[]) context.getCurrentValue().toArray();
+      String[] info = context.getCurrentValue().toStrings();
       // Sum of all occurrence of `word'
       int total_sum = Integer.parseInt(info[0]);
 
@@ -77,7 +77,7 @@ public class WordCount {
       // file that is currently processing
       for (ArrayWritable val: values) {
         int sum = Integer.parseInt(info[2]);
-        if (info[1].equals(((String[]) val.toArray())[1])){
+        if (info[1].equals(( val.toStrings())[1])){
           ++sum;
         }
         String[] holder = {info[1], Integer.toString(sum)};
