@@ -41,7 +41,7 @@ public class ContentExtractor {
 		while (itr.hasMoreTokens()) {
 		    String word = itr.nextToken();
 		    String count = itr.nextToken();
-		    context.write(new Text(word), new Text(count));
+		    context.write(new Text("None"), new Text(word+"#"+count));//dummy key 
 		}
 	    }
 	    // format: word amount#query/FileName
@@ -53,11 +53,33 @@ public class ContentExtractor {
 
 	public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 	    // HashList: Word:Count
-	    float sum = 0;
+	    
+	    List<String> sortedList = new ArrayList<>();
 	    for (Text val : values) {
-		sum += Float.valueOf(val.toString());
+	        sortedList.add(val.toString());
 	    }
-	    context.write(key,new Text(String.valueOf(sum)));
+	    Collections.sort(sortedList);
+	    
+	    float sum = 0;
+	    float maxSum = -1;
+	    String maxFile = "";
+	    String previousFile = "";
+	    for (String val : sortedList) {
+		String [] split = val.split("#");
+		if(previousFile.equals(split[0])) {
+		    sum += Float.valueOf(split[1]); 
+		    if(sum > maxSum) {
+			maxSum = sum;
+			maxFile = split[0];
+		    }
+		}
+		else {
+		    previousFile = split[0];
+		    sum = Float.valueOf(split[1]);
+		}
+		
+	    }
+	    context.write(new Text(maxFile),new Text(String.valueOf(maxSum)));
 	    //prints the files with their values 
 	}
 
