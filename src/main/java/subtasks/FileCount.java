@@ -41,8 +41,7 @@ public class FileCount {
             "[^(\\x20|(\\x41-\\x5A)|(\\x61-\\x7A))]", "");
         nextString = nextString.toLowerCase();
         word.set(nextString);
-        Text fileName = new Text(((FileSplit) context.getInputSplit())
-            .getPath().getName());
+        Text fileName = new Text(((FileSplit) context.getInputSplit()).getPath().getName());
 //        System.out.println(fileName.toString() + " " + word.toString());
         context.write(fileName, word);
 
@@ -55,7 +54,8 @@ public class FileCount {
   // reduce to file
   public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
 
-    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    public void reduce(Text key, Iterable<Text> values, Context context)
+        throws IOException, InterruptedException {
       // HashList: Word:Count
       LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer>();
       LinkedList<String> memorizeList = new LinkedList<String>();

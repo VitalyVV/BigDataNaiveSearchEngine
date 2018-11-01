@@ -22,7 +22,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
  * Counts occurences of word in files. IDF
  */
 public class OccurCount {
-
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
     private Text word = new Text();
     private final Gson g = new Gson();
@@ -39,7 +38,7 @@ public class OccurCount {
         word.set(nextString);
         Text fileName = new Text(((FileSplit) context.getInputSplit())
             .getPath().getName());
-        System.out.println(fileName.toString() + " " + word.toString());
+//        System.out.println(fileName.toString() + " " + word.toString());
         context.write(word, fileName);
 
         // maps word fileName
@@ -56,25 +55,25 @@ public class OccurCount {
       LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer>();
       LinkedList<String> memorizeList = new LinkedList<String>();
       for (Text val : values) {
-        System.out.println("read text" + val.toString());
+//        System.out.println("read text" + val.toString());
         if (map.containsKey(key.toString())) {
           if (!memorizeList.contains(val.toString())) {
             // count word per file only once
             map.put(key.toString(), map.get(key.toString()) + 1);
             memorizeList.add(val.toString());
-            System.out.println("puttet higher" + key.toString());
+//            System.out.println("puttet higher" + key.toString());
           }
         } else {
           map.put(key.toString(), 1);
           memorizeList.add(val.toString());
-          System.out.println("new entry" + key.toString());
+//          System.out.println("new entry" + key.toString());
         }
 
       }
 
       for (Map.Entry<String, Integer> value : map.entrySet()) {
         context.write(new Text(value.getKey()), new Text(Integer.toString(value.getValue())));
-        System.out.println(value.getKey() + Integer.toString(value.getValue()));
+//        System.out.println(value.getKey() + Integer.toString(value.getValue()));
       }
 
     }
