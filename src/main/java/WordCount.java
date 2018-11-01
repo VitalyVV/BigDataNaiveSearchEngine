@@ -1,5 +1,3 @@
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
