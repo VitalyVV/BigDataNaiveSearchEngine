@@ -26,7 +26,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 //import org.apache.hadoop.io.Text;
 /**
- * Counts occurences of word in files.
+ * Counts occurences of word in files. IDF
  */
 public class OccurCount
 {
