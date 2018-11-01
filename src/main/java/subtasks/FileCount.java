@@ -29,7 +29,7 @@ public class FileCount {
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
 
     private Text word = new Text();
-    private Gson g = new Gson();
+    private final Gson g = new Gson();
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       DatasetDescription dd =  g.fromJson(value.toString(), DatasetDescription.class);
@@ -43,7 +43,7 @@ public class FileCount {
         word.set(nextString);
         Text fileName = new Text(((FileSplit) context.getInputSplit())
             .getPath().getName());
-        System.out.println(fileName.toString() + " " + word.toString());
+//        System.out.println(fileName.toString() + " " + word.toString());
         context.write(fileName, word);
 
         // maps FileName word
@@ -60,22 +60,22 @@ public class FileCount {
       LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer>();
       LinkedList<String> memorizeList = new LinkedList<String>();
       for (Text val : values) {
-        System.out.println("read text" + val.toString());
+//        System.out.println("read text" + val.toString());
         if (map.containsKey(val.toString())) {
           // count word per file only once
           map.put(val.toString(), map.get(val.toString()) + 1);
           memorizeList.add(key.toString());
-          System.out.println("puttet higher" + val.toString());
+//          System.out.println("puttet higher" + val.toString());
         } else {
           map.put(val.toString(), 1);
           memorizeList.add(key.toString());
-          System.out.println("new entry" + val.toString());
+//          System.out.println("new entry" + val.toString());
         }
 
-        for (Map.Entry<String, Integer> value : map.entrySet()) {
-          System.out.println("print map" + value.getKey()
-              + Integer.toString(value.getValue()));
-        }
+//        for (Map.Entry<String, Integer> value : map.entrySet()) {
+//          System.out.println("print map" + value.getKey()
+//              + Integer.toString(value.getValue()));
+//        }
       }
 
       for (Map.Entry<String, Integer> value : map.entrySet()) {
@@ -84,7 +84,7 @@ public class FileCount {
         builder.append("#");
         builder.append(Integer.toString(value.getValue()));
         context.write(key, new Text(builder.toString()));
-        System.out.println(builder.toString());
+//        System.out.println(builder.toString());
       }
 
     }
