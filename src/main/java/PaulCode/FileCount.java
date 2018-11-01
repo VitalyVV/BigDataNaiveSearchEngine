@@ -29,7 +29,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
- * Counts occurs of words per file.
+ * Counts occurs of words per file.TF
  */
 
 
