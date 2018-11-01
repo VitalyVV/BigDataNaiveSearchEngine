@@ -22,14 +22,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.w3c.dom.Text;
+
+
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * Converts query with vocabulary into queue.
  */
 
-public class Relevance {
+public class ContentExtractor {
 
     public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
 
@@ -54,9 +55,10 @@ public class Relevance {
 	    // HashList: Word:Count
 	    float sum = 0;
 	    for (Text val : values) {
-		sum += String.valueOf(val.toString());
+		sum += Float.valueOf(val.toString());
 	    }
-	    // concats all the words in file : fileName word#TF/IDF#word#TF/IDF...
+	    context.write(key,new Text(String.valueOf(sum)));
+	    //prints the files with their values 
 	}
 
     }
@@ -64,7 +66,7 @@ public class Relevance {
     public static void main(String[] args) throws Exception {
 	Configuration conf = new Configuration();
 	Job job = Job.getInstance(conf, "file count");
-	job.setJarByClass(Relevance.class);
+	job.setJarByClass(ContentExtractor.class);
 	job.setMapperClass(TokenizerMapper.class);
 	// job.setCombinerClass(IntSumReducer.class);
 	job.setReducerClass(IntSumReducer.class);
