@@ -1,32 +1,19 @@
-package PaulCode;
-
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Text;
+package subtasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
-import net.minidev.json.reader.ArrayWriter;
-import org.apache.avro.generic.GenericData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.Task;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.util.Collections;
-
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * Converts to machine easily readible file
