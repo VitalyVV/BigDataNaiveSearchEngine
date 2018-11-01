@@ -22,15 +22,13 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 /**
  * Converts query with vocabulary into queue.
  */
 
-public class ContentExtractor {
+public class MaxFinder {
 
     public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
 
@@ -41,7 +39,7 @@ public class ContentExtractor {
 		while (itr.hasMoreTokens()) {
 		    String word = itr.nextToken();
 		    String count = itr.nextToken();
-		    context.write(new Text("None"), new Text(word+"#"+count));//dummy key 
+		    context.write(new Text("None"), new Text(count+"#"+word));// dummy key to compare
 		}
 	    }
 	    // format: word amount#query/FileName
@@ -53,34 +51,18 @@ public class ContentExtractor {
 
 	public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 	    // HashList: Word:Count
-	    
-	    List<String> sortedList = new ArrayList<>();
+	    float max = -1;
+	    String maxName = "";
 	    for (Text val : values) {
-	        sortedList.add(val.toString());
-	    }
-	    Collections.sort(sortedList);
-	    
-	    float sum = 0;
-	    float maxSum = -1;
-	    String maxFile = "";
-	    String previousFile = "";
-	    for (String val : sortedList) {
-		String [] split = val.split("#");
-		if(previousFile.equals(split[0])) {
-		    sum += Float.valueOf(split[1]); 
-		    if(sum > maxSum) {
-			maxSum = sum;
-			maxFile = split[0];
-		    }
+		String [] split = val.toString().split("#");
+		System.out.println("works"+split[0]+split[1]);
+		if(Float.parseFloat(split[0])>max) {
+		    max = Float.parseFloat(split[0]);
+		    maxName = split[1];
 		}
-		else {
-		    previousFile = split[0];
-		    sum = Float.valueOf(split[1]);
-		}
-		
 	    }
-	    context.write(new Text(maxFile),new Text(String.valueOf(maxSum)));
-	    //prints the files with their values 
+	    context.write(new Text(maxName),new Text(""));// dummy print for name
+	    //prints the maximum fileName
 	}
 
     }
@@ -88,7 +70,7 @@ public class ContentExtractor {
     public static void main(String[] args) throws Exception {
 	Configuration conf = new Configuration();
 	Job job = Job.getInstance(conf, "file count");
-	job.setJarByClass(ContentExtractor.class);
+	job.setJarByClass(MaxFinder.class);
 	job.setMapperClass(TokenizerMapper.class);
 	// job.setCombinerClass(IntSumReducer.class);
 	job.setReducerClass(IntSumReducer.class);
