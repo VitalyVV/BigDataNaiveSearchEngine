@@ -66,7 +66,7 @@ public class Indexer {
     job1.setOutputValueClass(Text.class);
 
     FileInputFormat.addInputPath(job1, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job1, new Path("wcoutput_1/"));
+    FileOutputFormat.setOutputPath(job1, new Path(String.format("%s%s", "wcoutput_1", args[0])));
     if (!job1.waitForCompletion(true)) {
       System.exit(1);
     }
@@ -81,7 +81,7 @@ public class Indexer {
 
 
     FileInputFormat.addInputPath(job2, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job2, new Path("wcoutput_2/"));
+    FileOutputFormat.setOutputPath(job2, new Path(String.format("%s%s", "wcoutput_2", args[0])));
     if (!job2.waitForCompletion(true)) {
       System.exit(1);
     }
@@ -93,10 +93,8 @@ public class Indexer {
     job3.setOutputKeyClass(Text.class);
     job3.setOutputValueClass(Text.class);
 
-//    MultipleInputs.addInputPath(job3, new Path("wcoutput_1/"), TextInputFormat.class, Merge.TokenizerMapper.class);
-//    MultipleInputs.addInputPath(job3, new Path("wcoutput_2/"), TextInputFormat.class, Merge.TokenizerMapper.class);
-    FileInputFormat.setInputPaths(job3, new Path("wcoutput_1"), new Path("wcoutput_2"));
-    FileOutputFormat.setOutputPath(job3, new Path("wcoutput_3"));
+    FileInputFormat.setInputPaths(job3, new Path(String.format("%s%s", "wcoutput_1", args[0])), new Path(String.format("%s%s", "wcoutput_2", args[0])));
+    FileOutputFormat.setOutputPath(job3, new Path(String.format("%s%s", "wcoutput_3", args[0])));
 
     if (!job3.waitForCompletion(true))
       System.exit(1);
@@ -104,12 +102,11 @@ public class Indexer {
     Job job4 = Job.getInstance(conf, "Indexer job");
     job4.setJarByClass(Indexer.class);
     job4.setMapperClass(Indexer.TokenizerMapper.class);
-    //job.setCombinerClass(IntSumReducer.class);
     job4.setReducerClass(Indexer.IntSumReducer.class);
 
     job4.setOutputKeyClass(Text.class);
     job4.setOutputValueClass(Text.class);
-    FileInputFormat.addInputPath(job4, new Path("wcoutput_3"));
+    FileInputFormat.addInputPath(job4, new Path(String.format("%s%s", "wcoutput_3", args[0])));
     FileOutputFormat.setOutputPath(job4, new Path(args[1]));
     System.exit(job4.waitForCompletion(true) ? 0 : 1);
   }
