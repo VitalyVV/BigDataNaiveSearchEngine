@@ -21,7 +21,6 @@ import java.util.Collections;
 
 
 public class Indexer {
-
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
@@ -56,15 +55,46 @@ public class Indexer {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    Job job = Job.getInstance(conf, "file count");
-    job.setJarByClass(Indexer.class);
-    job.setMapperClass(TokenizerMapper.class);
+    Job job1 = Job.getInstance(conf, "file count");
+    job1.setJarByClass(Indexer.class);
+    job1.setMapperClass(TokenizerMapper.class);
     //job.setCombinerClass(IntSumReducer.class);
-    job.setReducerClass(IntSumReducer.class);
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(Text.class);
-    FileInputFormat.addInputPath(job, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job, new Path(args[1]));
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
+    job1.setReducerClass(IntSumReducer.class);
+
+    job1.setOutputKeyClass(Text.class);
+    job1.setOutputValueClass(Text.class);
+    FileInputFormat.addInputPath(job1, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job1, new Path("/temp/wcoutput/"));
+    System.exit(job1.waitForCompletion(true) ? 0 : 1);
+
+    Job job2 = Job.getInstance(conf, "Occur Count");
+    job2.setJarByClass(OccurCount.class);
+    job2.setMapperClass(OccurCount.TokenizerMapper.class);
+    job2.setReducerClass(OccurCount.IntSumReducer.class);
+    job2.setOutputKeyClass(Text.class);
+    job2.setOutputValueClass(Text.class);
+
+
+//    job2.setNumReduceTasks(1);
+//    job2.setSortComparatorClass(LongWritable.DecreasingComparator.class);
+//    job2.setInputFormatClass(SequenceFileInputFormat.class);
+    FileInputFormat.addInputPath(job2, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job2, new Path("/temp/wcoutput/"));
+    if (!job2.waitForCompletion(true)) {
+      System.exit(1);
+    }
+
+
+    Job job3 = Job.getInstance(conf, "merge task");
+    job3.setJarByClass(Merge.class);
+    job3.setMapperClass(Merge.TokenizerMapper.class);
+    job3.setReducerClass(Merge.PrintReducer.class);
+    job3.setOutputKeyClass(Text.class);
+    job3.setOutputValueClass(Text.class);
+
+    FileInputFormat.addInputPath(job3, new Path("/temp/wcoutput/"));
+    FileOutputFormat.setOutputPath(job3, new Path(args[1]));
+    System.exit(job3.waitForCompletion(true) ? 0 : 1);
+
   }
 }
