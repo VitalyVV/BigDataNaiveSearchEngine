@@ -1,24 +1,16 @@
-package PaulCode;
+package subtasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
-import net.minidev.json.reader.ArrayWriter;
-import org.apache.avro.generic.GenericData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.Task;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -33,16 +25,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class QueryVectorizer {
 
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
-
     private Text word = new Text();
 
-
-    public void map(
-        Object key,
-        Text value,
-        Context context)
-        throws IOException,
-        InterruptedException {
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
       StringBuilder builder = new StringBuilder();
       LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
@@ -53,7 +38,7 @@ public class QueryVectorizer {
       if (fileName.toString().contains("queryInput")) {
         while (itr.hasMoreTokens()) {
           String word = itr.nextToken();
-          System.out.println("in loop");
+//          System.out.println("in loop");
           // is query file
           String nextString = word.replaceAll(
               "[^(\\x20|(\\x41-\\x5A)|(\\x61-\\x7A))]", "");
@@ -65,19 +50,18 @@ public class QueryVectorizer {
           }
         }
         for (Map.Entry<String, Integer> val : map.entrySet()) {
-          context.write(new Text(val.getKey()),
-              new Text(Integer.toString(val.getValue())));
-          System.out.println("");
-          System.out.println("");
-          System.out.println("");
-          System.out.println("query" + val.getKey()
-              + Integer.toString(val.getValue()));
+          context.write(new Text(val.getKey()), new Text(Integer.toString(val.getValue())));
+//          System.out.println("");
+//          System.out.println("");
+//          System.out.println("");
+//          System.out.println("query" + val.getKey()
+//              + Integer.toString(val.getValue()));
         }
       } else {
         while (itr.hasMoreTokens()) {
           String word = itr.nextToken();
           String amount = itr.nextToken();
-          System.out.println("mapper writes " + word + ":" + amount);
+//          System.out.println("mapper writes " + word + ":" + amount);
           context.write(new Text(word), new Text(amount + "#"));
         }
       }
@@ -90,7 +74,8 @@ public class QueryVectorizer {
   // reduce to file
   public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
 
-    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException,
+        InterruptedException {
       // HashList: Word:Count
       StringBuilder builder = new StringBuilder();
       float globalCount = -1;

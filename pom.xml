@@ -8,14 +8,6 @@
   <artifactId>joogle</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <distributionManagement>
-    <repository>
-      <id>ssh-team5</id>
-      <url>scp://10.90.138.32/home/team5/artifacts</url>
-    </repository>
-  </distributionManagement>
-
-
   <properties>
     <java.version>1.8</java.version>
     <slf4j.version>1.7.25</slf4j.version>
@@ -27,7 +19,6 @@
 
   <build>
     <extensions>
-        <!-- Enabling the use of SSH -->
         <extension>
           <groupId>org.apache.maven.wagon</groupId>
           <artifactId>wagon-ssh</artifactId>
@@ -53,18 +44,28 @@
             <archive>
               <manifest>
                 <addClasspath>true</addClasspath>
-                <mainClass>WordCount</mainClass>
               </manifest>
             </archive>
           </configuration>
         </plugin>
         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <configuration>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-          </configuration>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>wagon-maven-plugin</artifactId>
+          <version>1.0</version>
+          <executions>
+            <execution>
+              <id>upload</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>upload-single</goal>
+              </goals>
+              <configuration>
+                <fromFile>${project.build.directory}/${project.build.finalName}.jar</fromFile>
+                <url>scp://10.90.138.32/home/team5/</url>
+                <serverId>ssh-team5</serverId>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
