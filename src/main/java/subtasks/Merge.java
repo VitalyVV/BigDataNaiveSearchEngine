@@ -21,13 +21,15 @@ public class Merge {
 
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-      String initial = value.toString();
+      String initial = value.toString().trim();
       String splitted[] = initial.split("\\s+");
+      String msg;
       if (splitted.length > 1) {
-//        StringBuilder b = new StringBuilder();
-//        for (String s: splitted)
-//          b.append(s + " ");
-//        String processed = b.toString().trim();
+
+        StringBuilder b = new StringBuilder();
+        for (String s: splitted)
+          b.append(s + "#");
+        msg = b.toString();
 
         StringTokenizer itr = new StringTokenizer(initial);
         while (itr.hasMoreTokens()) {
@@ -47,7 +49,7 @@ public class Merge {
             try {
               amount = itr.nextToken();
             } catch (RuntimeException e) {
-              throw new CustomException("chert", e, initial);
+              throw new CustomException("chert", e, String.format("Reason = [%s], content=[%s]", initial, msg));
             }
 //					System.out.println(
 //							"mapper writes " + identificator + ":" + amount);

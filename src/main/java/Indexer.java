@@ -58,33 +58,33 @@ public class Indexer {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-//    Job job1 = Job.getInstance(conf, "File Count");
-//    job1.setJarByClass(FileCount.class);
-//    job1.setMapperClass(FileCount.TokenizerMapper.class);
-//    job1.setReducerClass(FileCount.IntSumReducer.class);
-//    job1.setOutputKeyClass(Text.class);
-//    job1.setOutputValueClass(Text.class);
-//
-//    FileInputFormat.addInputPath(job1, new Path(args[0]));
-//    FileOutputFormat.setOutputPath(job1, new Path("wcoutput_1/"));
-//    if (!job1.waitForCompletion(true)) {
-//      System.exit(1);
-//    }
-//
-//
-//    Job job2 = Job.getInstance(conf, "Occur Count");
-//    job2.setJarByClass(OccurCount.class);
-//    job2.setMapperClass(OccurCount.TokenizerMapper.class);
-//    job2.setReducerClass(OccurCount.IntSumReducer.class);
-//    job2.setOutputKeyClass(Text.class);
-//    job2.setOutputValueClass(Text.class);
-//
-//
-//    FileInputFormat.addInputPath(job2, new Path(args[0]));
-//    FileOutputFormat.setOutputPath(job2, new Path("wcoutput_2/"));
-//    if (!job2.waitForCompletion(true)) {
-//      System.exit(1);
-//    }
+    Job job1 = Job.getInstance(conf, "File Count");
+    job1.setJarByClass(FileCount.class);
+    job1.setMapperClass(FileCount.TokenizerMapper.class);
+    job1.setReducerClass(FileCount.IntSumReducer.class);
+    job1.setOutputKeyClass(Text.class);
+    job1.setOutputValueClass(Text.class);
+
+    FileInputFormat.addInputPath(job1, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job1, new Path("wcoutput_1/"));
+    if (!job1.waitForCompletion(true)) {
+      System.exit(1);
+    }
+
+
+    Job job2 = Job.getInstance(conf, "Occur Count");
+    job2.setJarByClass(OccurCount.class);
+    job2.setMapperClass(OccurCount.TokenizerMapper.class);
+    job2.setReducerClass(OccurCount.IntSumReducer.class);
+    job2.setOutputKeyClass(Text.class);
+    job2.setOutputValueClass(Text.class);
+
+
+    FileInputFormat.addInputPath(job2, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job2, new Path("wcoutput_2/"));
+    if (!job2.waitForCompletion(true)) {
+      System.exit(1);
+    }
 
     Job job3 = Job.getInstance(conf, "merge task");
     job3.setJarByClass(Merge.class);
@@ -96,22 +96,21 @@ public class Indexer {
 //    MultipleInputs.addInputPath(job3, new Path("wcoutput_1/"), TextInputFormat.class, Merge.TokenizerMapper.class);
 //    MultipleInputs.addInputPath(job3, new Path("wcoutput_2/"), TextInputFormat.class, Merge.TokenizerMapper.class);
     FileInputFormat.setInputPaths(job3, new Path("wcoutput_1"), new Path("wcoutput_2"));
-    FileOutputFormat.setOutputPath(job3, new Path(args[1]));
+    FileOutputFormat.setOutputPath(job3, new Path("wcoutput_3"));
 
     if (!job3.waitForCompletion(true))
       System.exit(1);
 
-//
-//    Job job4 = Job.getInstance(conf, "Indexer job");
-//    job4.setJarByClass(Indexer.class);
-//    job4.setMapperClass(Indexer.TokenizerMapper.class);
-//    //job.setCombinerClass(IntSumReducer.class);
-//    job4.setReducerClass(Indexer.IntSumReducer.class);
-//
-//    job4.setOutputKeyClass(Text.class);
-//    job4.setOutputValueClass(Text.class);
-//    FileInputFormat.addInputPath(job4, new Path("wcoutput_2/"));
-//    FileOutputFormat.setOutputPath(job4, new Path(args[1]));
-//    System.exit(job4.waitForCompletion(true) ? 0 : 1);
+    Job job4 = Job.getInstance(conf, "Indexer job");
+    job4.setJarByClass(Indexer.class);
+    job4.setMapperClass(Indexer.TokenizerMapper.class);
+    //job.setCombinerClass(IntSumReducer.class);
+    job4.setReducerClass(Indexer.IntSumReducer.class);
+
+    job4.setOutputKeyClass(Text.class);
+    job4.setOutputValueClass(Text.class);
+    FileInputFormat.addInputPath(job4, new Path("wcoutput_3"));
+    FileOutputFormat.setOutputPath(job4, new Path(args[1]));
+    System.exit(job4.waitForCompletion(true) ? 0 : 1);
   }
 }
