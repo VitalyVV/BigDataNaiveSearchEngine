@@ -21,26 +21,40 @@ public class Merge {
 
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-      StringTokenizer itr = new StringTokenizer(value.toString());
-      while (itr.hasMoreTokens()) {
-        String identificator = itr.nextToken();
-        if (identificator.contains(".")) {
-          //read file
-          String[] split = itr.nextToken().split("#");
-          String word = split[0];
-          String amount = split[1];
+      String initial = value.toString();
+      String splitted[] = initial.split("\\s+");
+      if (splitted.length > 1) {
+//        StringBuilder b = new StringBuilder();
+//        for (String s: splitted)
+//          b.append(s + " ");
+//        String processed = b.toString().trim();
+
+        StringTokenizer itr = new StringTokenizer(initial);
+        while (itr.hasMoreTokens()) {
+          String identificator = itr.nextToken();
+          if (identificator.contains(".")) {
+            //read file
+            String[] split = itr.nextToken().split("#");
+            String word = split[0];
+            String amount = split[1];
 //          System.out.println("mapper writes " + word + ":" + amount
 //              + "#" + identificator);
-          context.write(new Text(word),
-              new Text(amount + "#" + identificator));
-        } else {
-          //read word
-          String amount = itr.nextToken();
+            context.write(new Text(word),
+                new Text(amount + "#" + identificator));
+          } else {
+            //read word
+            String amount;
+            try {
+              amount = itr.nextToken();
+            } catch (RuntimeException e) {
+              throw new CustomException("chert", e, initial);
+            }
 //					System.out.println(
 //							"mapper writes " + identificator + ":" + amount);
-          context.write(new Text(identificator), new Text(amount));
+            context.write(new Text(identificator), new Text(amount));
+          }
+          // format: word amount(#fileName)
         }
-        // format: word amount(#fileName)
       }
     }
   }
