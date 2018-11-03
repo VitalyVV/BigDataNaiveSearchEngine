@@ -1,4 +1,4 @@
-package subtasks;
+package indexing;
 
 public class DatasetDescription {
   public String title;

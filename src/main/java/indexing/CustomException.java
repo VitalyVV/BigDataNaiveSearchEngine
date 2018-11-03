@@ -1,4 +1,4 @@
-package subtasks;
+package indexing;
 
 public class CustomException extends RuntimeException {
   private String temp;

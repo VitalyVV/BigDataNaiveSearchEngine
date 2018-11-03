@@ -9,14 +9,12 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.util.Collections;
-import subtasks.FileCount;
-import subtasks.Merge;
-import subtasks.OccurCount;
+import indexing.FileCount;
+import indexing.Merge;
+import indexing.OccurCount;
 
 /**
  * Converts to machine easily readible file
@@ -58,6 +56,10 @@ public class Indexer {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
+    Path countPath =  new Path(String.format("%s%s", "wcoutput_1", args[0]));
+    Path occurPath = new Path(String.format("%s%s", "wcoutput_2", args[0]));
+    Path mergePath = new Path(String.format("%s%s", "wcoutput_3", args[0]));
+
     Job job1 = Job.getInstance(conf, "File Count");
     job1.setJarByClass(FileCount.class);
     job1.setMapperClass(FileCount.TokenizerMapper.class);
@@ -66,7 +68,7 @@ public class Indexer {
     job1.setOutputValueClass(Text.class);
 
     FileInputFormat.addInputPath(job1, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job1, new Path(String.format("%s%s", "wcoutput_1", args[0])));
+    FileOutputFormat.setOutputPath(job1, countPath);
     if (!job1.waitForCompletion(true)) {
       System.exit(1);
     }
@@ -81,20 +83,20 @@ public class Indexer {
 
 
     FileInputFormat.addInputPath(job2, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job2, new Path(String.format("%s%s", "wcoutput_2", args[0])));
+    FileOutputFormat.setOutputPath(job2, occurPath);
     if (!job2.waitForCompletion(true)) {
       System.exit(1);
     }
 
-    Job job3 = Job.getInstance(conf, "merge task");
+    Job job3 = Job.getInstance(conf, "Merge task");
     job3.setJarByClass(Merge.class);
     job3.setMapperClass(Merge.TokenizerMapper.class);
     job3.setReducerClass(Merge.PrintReducer.class);
     job3.setOutputKeyClass(Text.class);
     job3.setOutputValueClass(Text.class);
 
-    FileInputFormat.setInputPaths(job3, new Path(String.format("%s%s", "wcoutput_1", args[0])), new Path(String.format("%s%s", "wcoutput_2", args[0])));
-    FileOutputFormat.setOutputPath(job3, new Path(String.format("%s%s", "wcoutput_3", args[0])));
+    FileInputFormat.setInputPaths(job3, countPath, occurPath);
+    FileOutputFormat.setOutputPath(job3, mergePath);
 
     if (!job3.waitForCompletion(true))
       System.exit(1);
@@ -106,7 +108,7 @@ public class Indexer {
 
     job4.setOutputKeyClass(Text.class);
     job4.setOutputValueClass(Text.class);
-    FileInputFormat.addInputPath(job4, new Path(String.format("%s%s", "wcoutput_3", args[0])));
+    FileInputFormat.addInputPath(job4, mergePath);
     FileOutputFormat.setOutputPath(job4, new Path(args[1]));
     System.exit(job4.waitForCompletion(true) ? 0 : 1);
   }

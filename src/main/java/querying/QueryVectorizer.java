@@ -1,4 +1,4 @@
-package subtasks;
+package querying;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -25,9 +25,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class QueryVectorizer {
 
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
+
     private Text word = new Text();
 
-    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+    public void map(Object key, Text value, Context context)
+        throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
       StringBuilder builder = new StringBuilder();
       LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
@@ -83,8 +85,10 @@ public class QueryVectorizer {
       for (Text val : values) {
         if (val.toString().contains("#")) {
           // idf
-          globalCount = Integer
-              .parseInt(val.toString().replace("#", ""));
+//          globalCount = Integer
+//              .parseInt(val.toString().replace("#", ""));
+          String[] splitted = val.toString().split("#");
+          globalCount = Float.parseFloat(splitted[1]);
         } else {
           // count query
           queryCount = Integer.parseInt(val.toString());
