@@ -2,8 +2,6 @@ package subtasks;
 
 import com.google.gson.Gson;
 
-import javafx.scene.text.Text;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
