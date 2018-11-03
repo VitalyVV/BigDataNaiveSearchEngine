@@ -100,9 +100,9 @@ public class Merge {
           "global count" + globalCount + " " + Integer.toString(writeList.size()) + "Key" + key
               .toString() + ".");
       for (String val : writeList) {
-        System.out.println("writeList" + val);
-      }
-      for (String val : writeList) {
+	  if(!val.contains("#")) {
+	      System.out.println("problem"+val);
+	  }
         String[] split = val.split("#");
         float amount = Integer.parseInt(split[0]);
         String fileName = split[1];
