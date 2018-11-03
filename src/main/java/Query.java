@@ -27,7 +27,7 @@ public class Query {
 
     FileInputFormat.setInputPaths(jobVectorize, vocabularyPath, queryFile);
     FileOutputFormat.setOutputPath(jobVectorize, vectorizedPath);
-    if (jobVectorize.waitForCompletion(true)) {
+    if (!jobVectorize.waitForCompletion(true)) {
       System.exit(1);
     }
 

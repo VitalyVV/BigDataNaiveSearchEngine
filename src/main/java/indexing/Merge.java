@@ -24,7 +24,7 @@ public class Merge {
       String initial = value.toString().trim();
       String splitted[] = initial.split("\\s+");
       String msg;
-      if (splitted.length > 1) {
+      if (splitted.length > 1 && !splitted[1].startsWith("#")) {
 
         StringBuilder b = new StringBuilder();
         for (String s: splitted)
