@@ -83,10 +83,10 @@ public class QueryVectorizer {
       for (Text val : values) {
         if (val.toString().contains("#")) {
           // idf
-//          globalCount = Integer
-//              .parseInt(val.toString().replace("#", ""));
-          String[] splitted = val.toString().split("#");
-          globalCount = Float.parseFloat(splitted[1]);
+          globalCount = Integer
+              .parseInt(val.toString().replace("#", ""));
+//          String[] splitted = val.toString().split("#");
+//          globalCount = Float.parseFloat(splitted[1]);
         } else {
           // count query
           queryCount = Integer.parseInt(val.toString());

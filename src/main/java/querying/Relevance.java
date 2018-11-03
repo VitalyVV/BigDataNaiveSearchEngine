@@ -26,10 +26,9 @@ public class Relevance {
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
       LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
-      Text fileName = new Text(((FileSplit) context.getInputSplit()).getPath().getName());
+      Path path = ((FileSplit) context.getInputSplit()).getPath();
 
-      if (fileName.toString().contains("query")) {
-        LinkedList<String> list = new LinkedList<>();
+      if (path.toString().contains("vectorized")) {  // TODO: not obvious
         // query file
         while (itr.hasMoreTokens()) {
           String word = itr.nextToken();
@@ -70,6 +69,7 @@ public class Relevance {
           files.add(val.toString());
         }
       }
+
       if (queryCount != 0) {
         for (String val : files) {
           String[] split = val.split("#");

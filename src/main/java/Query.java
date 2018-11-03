@@ -5,6 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import querying.ContentExtractor;
 import querying.QueryVectorizer;
 import querying.Relevance;
 
@@ -15,7 +16,7 @@ public class Query {
     final Path relevantPath = new Path(String.format("%s%s", "relevanted", args[0]));
     final Path vectorizedPath = new Path(String.format("%s%s", "vectorized", args[0]));
     final Path queryFile = new Path(String.format("%s", args[0]));  // Query folder
-    final Path vocabularyPath = new Path(String.format("%s", args[1]));  // Merge output
+    final Path vocabularyPath = new Path(String.format("%s", args[1]));  // Occur output
     final Path indexerPath = new Path(String.format("%s", args[2]));  // Indexer output
 
     Job jobVectorize = Job.getInstance(conf, "Query vectorizer task");
@@ -45,9 +46,9 @@ public class Query {
     }
 
     Job extractorJob = Job.getInstance(conf, "Extractor task");
-    extractorJob.setJarByClass(Relevance.class);
-    extractorJob.setMapperClass(Relevance.TokenizerMapper.class);
-    extractorJob.setReducerClass(Relevance.IntSumReducer.class);
+    extractorJob.setJarByClass(ContentExtractor.class);
+    extractorJob.setMapperClass(ContentExtractor.TokenizerMapper.class);
+    extractorJob.setReducerClass(ContentExtractor.IntSumReducer.class);
     extractorJob.setOutputKeyClass(Text.class);
     extractorJob.setOutputValueClass(Text.class);
 

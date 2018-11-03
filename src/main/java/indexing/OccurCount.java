@@ -27,18 +27,20 @@ public class OccurCount {
     private final Gson g = new Gson();
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-      DatasetDescription dd =  g.fromJson(value.toString(), DatasetDescription.class);
+      DatasetDescription dd = g.fromJson(value.toString(), DatasetDescription.class);
 
 
       StringTokenizer itr = new StringTokenizer(String.format("%s %s", dd.title, dd.text));
       while (itr.hasMoreTokens()) {
         String nextString = itr.nextToken();
         nextString = nextString.replaceAll("[^a-zA-Z]", "").toLowerCase();
-        word.set(nextString);
-        Text fileName = new Text(((FileSplit) context.getInputSplit())
+        if (!nextString.toString().equals("")) {  // Check wheather this word is empty string
+          word.set(nextString);
+          Text fileName = new Text(((FileSplit) context.getInputSplit())
             .getPath().getName());
-//        System.out.println(fileName.toString() + " " + word.toString());
-        context.write(word, fileName);
+//          System.out.println(fileName.toString() + " " + word.toString());
+          context.write(word, fileName);
+        }
 
         // maps word fileName
       }
