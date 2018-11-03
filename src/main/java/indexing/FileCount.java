@@ -36,8 +36,7 @@ public class FileCount {
       StringTokenizer itr = new StringTokenizer(String.format("%s %s", dd.title, dd.text));
       while (itr.hasMoreTokens()) {
         String nextString = itr.nextToken();
-        nextString = nextString.replaceAll("[^(\\x20|(\\x41-\\x5A)|(\\x61-\\x7A))]", "");
-        nextString = nextString.toLowerCase();
+        nextString = nextString.replaceAll("[^a-zA-Z]", "").toLowerCase();
         word.set(nextString);
         Text fileName = new Text(((FileSplit) context.getInputSplit()).getPath().getName());
         // System.out.println(fileName.toString() + " " + word.toString());

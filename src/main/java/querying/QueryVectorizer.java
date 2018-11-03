@@ -42,9 +42,7 @@ public class QueryVectorizer {
           String word = itr.nextToken();
 //          System.out.println("in loop");
           // is query file
-          String nextString = word.replaceAll(
-              "[^(\\x20|(\\x41-\\x5A)|(\\x61-\\x7A))]", "");
-          nextString = nextString.toLowerCase();
+          String nextString = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
           if (map.containsKey(nextString)) {
             map.put(nextString, map.get(nextString) + 1);
           } else {
