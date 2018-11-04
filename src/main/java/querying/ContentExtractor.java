@@ -20,11 +20,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  */
 
 public class ContentExtractor {
-
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
-
-    private Text word = new Text();
-
     public void map(Object key, Text value, Context context)
         throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
@@ -40,9 +36,7 @@ public class ContentExtractor {
 
   // reduce to file
   public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
-
-    public void reduce(Text key, Iterable<Text> values, Context context)
-        throws IOException, InterruptedException {
+    public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
       // HashList: Word:Count
 
       List<String> sortedList = new ArrayList<>();

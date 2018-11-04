@@ -5,14 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -25,9 +20,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class QueryVectorizer {
 
   public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
-
-    private Text word = new Text();
-
     public void map(Object key, Text value, Context context)
         throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
@@ -39,7 +31,6 @@ public class QueryVectorizer {
       if (fileName.toString().contains("queryInput")) {
         while (itr.hasMoreTokens()) {
           String word = itr.nextToken();
-//          System.out.println("in loop");
           // is query file
           String nextString = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
           if (map.containsKey(nextString)) {
@@ -52,29 +43,20 @@ public class QueryVectorizer {
           if (!val.getKey().equals("")) {
             context.write(new Text(val.getKey()), new Text(Integer.toString(val.getValue())));
           }
-//          System.out.println("");
-//          System.out.println("");
-//          System.out.println("");
-//          System.out.println("query" + val.getKey()
-//              + Integer.toString(val.getValue()));
         }
       } else {
         while (itr.hasMoreTokens()) {
           String word = itr.nextToken();
           String amount = itr.nextToken();
-//          System.out.println("mapper writes " + word + ":" + amount);
           context.write(new Text(word), new Text(amount + "#"));
         }
       }
       // format: word amount(#) , appends(#) if IDF count
     }
-
   }
-
 
   // reduce to file
   public static class IntSumReducer extends Reducer<Text, Text, Text, Text> {
-
     public void reduce(Text key, Iterable<Text> values, Context context) throws IOException,
         InterruptedException {
       // HashList: Word:Count
@@ -84,36 +66,17 @@ public class QueryVectorizer {
       for (Text val : values) {
         if (val.toString().contains("#")) {
           // idf
-          globalCount = Integer
-              .parseInt(val.toString().replace("#", ""));
-//          String[] splitted = val.toString().split("#");
-//          globalCount = Float.parseFloat(splitted[1]);
+          globalCount = Integer.parseInt(val.toString().replace("#", ""));
         } else {
           // count query
           queryCount = Integer.parseInt(val.toString());
         }
       }
       if (queryCount != 0) {
-        System.out.println(key.toString() + " " + globalCount + " " + queryCount);
         context.write(key, new Text(Float.toString(queryCount / globalCount)));
       }
 
       // concats all the words in file : fileName word#TF/IDF#word#TF/IDF...
     }
-  }
-
-
-  public static void main(String[] args) throws Exception {
-    Configuration conf = new Configuration();
-    Job job = Job.getInstance(conf, "file count");
-    job.setJarByClass(QueryVectorizer.class);
-    job.setMapperClass(TokenizerMapper.class);
-    //job.setCombinerClass(IntSumReducer.class);
-    job.setReducerClass(IntSumReducer.class);
-    job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(Text.class);
-    FileInputFormat.addInputPath(job, new Path(args[0]));
-    FileOutputFormat.setOutputPath(job, new Path(args[1]));
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
   }
 }
