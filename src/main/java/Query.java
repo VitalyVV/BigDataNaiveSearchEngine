@@ -13,8 +13,8 @@ public class Query {
 
   public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
     final Configuration conf = new Configuration();
-    final Path relevantPath = new Path(String.format("%s%s", "relevanted", args[0]));
-    final Path vectorizedPath = new Path(String.format("%s%s", "vectorized", args[0]));
+    final Path relevantPath = new Path(String.format("%s%s", "relevanted_", args[0]));
+    final Path vectorizedPath = new Path(String.format("%s%s", "vectorized_", args[0]));
     final Path queryFile = new Path(String.format("%s", args[0]));  // Query folder
     final Path vocabularyPath = new Path(String.format("%s", args[1]));  // Occur output
     final Path indexerPath = new Path(String.format("%s", args[2]));  // Indexer output

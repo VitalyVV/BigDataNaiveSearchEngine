@@ -56,9 +56,9 @@ public class Indexer {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
-    Path countPath =  new Path(String.format("%s%s", "wcoutput_1", args[0]));
-    Path occurPath = new Path(String.format("%s%s", "wcoutput_2", args[0]));
-    Path mergePath = new Path(String.format("%s%s", "wcoutput_3", args[0]));
+    Path countPath =  new Path(String.format("%s%s", "count_", args[0]));
+    Path occurPath = new Path(String.format("%s%s", "occur_", args[0]));
+    Path mergePath = new Path(String.format("%s%s", "merge_", args[0]));
 
     Job job1 = Job.getInstance(conf, "File Count");
     job1.setJarByClass(FileCount.class);

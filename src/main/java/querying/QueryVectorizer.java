@@ -31,7 +31,6 @@ public class QueryVectorizer {
     public void map(Object key, Text value, Context context)
         throws IOException, InterruptedException {
       StringTokenizer itr = new StringTokenizer(value.toString());
-      StringBuilder builder = new StringBuilder();
       LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
       Text fileName = new Text(
           ((FileSplit) context.getInputSplit()).getPath().getName());
@@ -50,7 +49,9 @@ public class QueryVectorizer {
           }
         }
         for (Map.Entry<String, Integer> val : map.entrySet()) {
-          context.write(new Text(val.getKey()), new Text(Integer.toString(val.getValue())));
+          if (!val.getKey().equals("")) {
+            context.write(new Text(val.getKey()), new Text(Integer.toString(val.getValue())));
+          }
 //          System.out.println("");
 //          System.out.println("");
 //          System.out.println("");
